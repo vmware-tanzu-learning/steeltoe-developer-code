@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using FortuneTeller.Service.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,11 +12,11 @@ namespace FortuneTeller.Service
     {
         public static async Task Main(string[] args)
         {
-            var host = await Task.FromResult(CreateWebHostBuilder(args).Build());
+            var host = CreateWebHostBuilder(args).Build();
 
             using (var scope = host.Services.CreateScope())
             {
-
+                await SampleData.InitializeFortunesAsync(scope.ServiceProvider);
             }
 
             host.Run();

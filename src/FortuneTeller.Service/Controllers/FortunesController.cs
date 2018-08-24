@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FortuneTeller.Service.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FortuneTeller.Service.Controllers
@@ -10,10 +12,12 @@ namespace FortuneTeller.Service.Controllers
     public class FortunesController : ControllerBase
     {
         private readonly ILogger<FortunesController> _logger;
+        private IFortuneRepository _fortunes;
 
-        public FortunesController(ILogger<FortunesController> logger)
+        public FortunesController(ILogger<FortunesController> logger, IFortuneRepository fortunes)
         {
             _logger = logger;
+            _fortunes = fortunes;
         }
 
         // GET: api/fortunes/all
@@ -21,7 +25,10 @@ namespace FortuneTeller.Service.Controllers
         public async Task<List<Fortune>> AllFortunesAsync()
         {
             _logger?.LogTrace("AllFortunesAsync");
-            return await Task.FromResult(new List<Fortune>() { new Fortune() { Id = 1, Text = "Hello from FortuneController Web API!" } });
+            var entities = await _fortunes.GetAllAsync();
+            return entities
+                    .Select(fortune => new Fortune { Id = fortune.Id, Text = fortune.Text })
+                    .ToList();
         }
 
         // GET api/fortunes/random
@@ -29,7 +36,8 @@ namespace FortuneTeller.Service.Controllers
         public async Task<Fortune> RandomFortuneAsync()
         {
             _logger?.LogTrace("RandomFortuneAsync");
-            return (await AllFortunesAsync())[0];
+            var fortuneEntity = await _fortunes.RandomFortuneAsync();
+            return new Fortune { Id = fortuneEntity.Id, Text = fortuneEntity.Text };
         }
     }
 }
