@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Extensions.Configuration.ConfigServer;
 using System.IO;
 
 namespace FortuneTeller.UI
@@ -24,6 +25,7 @@ namespace FortuneTeller.UI
                     config
                         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                        .AddConfigServer(env)
                         .AddEnvironmentVariables();
 
                     if (args != null)
