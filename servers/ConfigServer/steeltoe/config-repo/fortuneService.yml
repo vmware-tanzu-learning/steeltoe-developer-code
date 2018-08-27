@@ -3,3 +3,6 @@ eureka:
     shouldFetchRegistry: false
   instance:
     port: 5001
+sqlServer:
+  credentials:
+    connectionString: "Server=(localdb)\\mssqllocaldb;database=fortuneService;Trusted_Connection=True;"
