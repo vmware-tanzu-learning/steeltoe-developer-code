@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Discovery.Client;
 
 namespace FortuneTeller.Service
 {
@@ -24,6 +25,7 @@ namespace FortuneTeller.Service
                     .AddDbContext<FortuneContext>(
                         options => options.UseInMemoryDatabase("Fortunes"));
             services.AddScoped<IFortuneRepository, FortuneRepository>();
+            services.AddDiscoveryClient(Configuration);
 
             services
                 .AddMvc()
@@ -37,6 +39,8 @@ namespace FortuneTeller.Service
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseDiscoveryClient();
 
             app.UseMvc();
         }

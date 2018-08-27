@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Discovery.Client;
 
 namespace FortuneTeller.UI
 {
@@ -27,9 +29,12 @@ namespace FortuneTeller.UI
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddTransient<DiscoveryHttpMessageHandler>();
+            services.AddDiscoveryClient(Configuration);
             services.Configure<FortuneServiceOptions>(Configuration.GetSection("fortuneService"));
             services.AddScoped<IFortuneService, FortuneServiceClient>();
-            services.AddHttpClient<IFortuneService, FortuneServiceClient>();
+            services.AddHttpClient<IFortuneService, FortuneServiceClient>()
+                .AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
 
             services.AddDistributedMemoryCache();
             services.AddSession();
@@ -49,6 +54,8 @@ namespace FortuneTeller.UI
             {
                 app.UseExceptionHandler("/Error");
             }
+
+            app.UseDiscoveryClient();
 
             app.UseStaticFiles();
             app.UseSession();
