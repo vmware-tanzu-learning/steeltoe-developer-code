@@ -1,5 +1,6 @@
 using FortuneTeller.UI.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Security.DataProtection;
 
 namespace FortuneTeller.UI
 {
@@ -38,6 +40,11 @@ namespace FortuneTeller.UI
                 .AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
 
             services.AddDistributedRedisCache(Configuration);
+            services.AddRedisConnectionMultiplexer(Configuration);
+            services.AddDataProtection()
+                .PersistKeysToRedis()
+                .SetApplicationName("fortuneui");
+
             services.AddSession();
             services
                 .AddMvc()
