@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CircuitBreaker.Hystrix;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
@@ -45,6 +46,9 @@ namespace FortuneTeller.UI
                 .PersistKeysToRedis()
                 .SetApplicationName("fortuneui");
 
+            services.AddHystrixCommand<FortuneServiceCommand>("FortuneService", Configuration);
+            services.AddHystrixMetricsStream(Configuration);
+
             services.AddSession();
             services
                 .AddMvc()
@@ -64,6 +68,8 @@ namespace FortuneTeller.UI
             }
 
             app.UseDiscoveryClient();
+            app.UseHystrixRequestContext();
+            app.UseHystrixMetricsStream();
 
             app.UseStaticFiles();
             app.UseSession();

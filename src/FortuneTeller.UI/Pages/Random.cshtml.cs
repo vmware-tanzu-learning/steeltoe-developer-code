@@ -9,9 +9,9 @@ namespace FortuneTeller.UI.Pages
     {
         public string Message { get; private set; } = "Hello from FortuneTellerUI!";
 
-        private IFortuneService _fortunes;
+        private FortuneServiceCommand _fortunes;
 
-        public RandomModel(IFortuneService fortuneService)
+        public RandomModel(FortuneServiceCommand fortuneService)
         {
             _fortunes = fortuneService;
         }
