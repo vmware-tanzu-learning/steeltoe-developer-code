@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 
@@ -36,7 +37,7 @@ namespace FortuneTeller.UI
             services.AddHttpClient<IFortuneService, FortuneServiceClient>()
                 .AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
 
-            services.AddDistributedMemoryCache();
+            services.AddDistributedRedisCache(Configuration);
             services.AddSession();
             services
                 .AddMvc()
