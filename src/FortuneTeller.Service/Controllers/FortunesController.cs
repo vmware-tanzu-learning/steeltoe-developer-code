@@ -1,4 +1,5 @@
 ﻿using FortuneTeller.Service.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ namespace FortuneTeller.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(policy: "fortunes.read")]
     public class FortunesController : ControllerBase
     {
         private readonly ILogger<FortunesController> _logger;

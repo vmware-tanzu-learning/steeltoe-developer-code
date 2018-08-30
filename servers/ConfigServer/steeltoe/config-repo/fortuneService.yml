@@ -6,3 +6,8 @@ eureka:
 sqlServer:
   credentials:
     connectionString: "Server=(localdb)\\mssqllocaldb;database=fortuneService;Trusted_Connection=True;"
+security: 
+  oauth2:
+    client:
+      clientId: fortuneservice
+      clientSecret: fortuneservice_secret
