@@ -11,6 +11,11 @@ using Steeltoe.CircuitBreaker.Hystrix;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Security.Authentication.CloudFoundry;
 using Steeltoe.Security.DataProtection;
 
@@ -68,6 +73,11 @@ namespace FortuneTeller.UI
             services.AddHystrixCommand<FortuneServiceCommand>("FortuneService", Configuration);
             services.AddHystrixMetricsStream(Configuration);
 
+            services.AddInfoActuator(Configuration);
+            services.AddLoggersActuator(Configuration);
+            services.AddHealthActuator(Configuration);
+            services.AddTraceActuator(Configuration);
+
             services.AddSession();
             services
                 .AddMvc()
@@ -89,6 +99,11 @@ namespace FortuneTeller.UI
             app.UseDiscoveryClient();
             app.UseHystrixRequestContext();
             app.UseHystrixMetricsStream();
+
+            app.UseInfoActuator();
+            app.UseLoggersActuator();
+            app.UseHealthActuator();
+            app.UseTraceActuator();
 
             app.UseStaticFiles();
             app.UseSession();

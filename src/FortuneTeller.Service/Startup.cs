@@ -6,8 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CloudFoundry.Connector.SqlServer;
 using Steeltoe.CloudFoundry.Connector.SqlServer.EFCore;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Security.Authentication.CloudFoundry;
 
 namespace FortuneTeller.Service
@@ -25,6 +30,7 @@ namespace FortuneTeller.Service
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<FortuneContext>(options => options.UseSqlServer(Configuration));
+            services.AddSqlServerConnection(Configuration);
             services.AddScoped<IFortuneRepository, FortuneRepository>();
             services.AddDiscoveryClient(Configuration);
 
@@ -36,6 +42,11 @@ namespace FortuneTeller.Service
                 {
                     options.AddPolicy("fortunes.read", policy => policy.RequireClaim("scope", "fortunes.read"));
                 });
+
+            services.AddInfoActuator(Configuration);
+            services.AddLoggersActuator(Configuration);
+            services.AddHealthActuator(Configuration);
+            services.AddTraceActuator(Configuration);
 
             services
                 .AddMvc()
@@ -52,6 +63,11 @@ namespace FortuneTeller.Service
 
             app.UseDiscoveryClient();
             app.UseAuthentication();
+
+            app.UseInfoActuator();
+            app.UseLoggersActuator();
+            app.UseHealthActuator();
+            app.UseTraceActuator();
 
             app.UseMvc();
         }
