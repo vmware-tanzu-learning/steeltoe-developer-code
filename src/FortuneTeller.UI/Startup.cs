@@ -1,4 +1,5 @@
 using FortuneTeller.UI.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,7 @@ using Steeltoe.CircuitBreaker.Hystrix;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Security.Authentication.CloudFoundry;
 using Steeltoe.Security.DataProtection;
 
 namespace FortuneTeller.UI
@@ -32,6 +34,23 @@ namespace FortuneTeller.UI
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services
+                .AddAuthentication((options) =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
+                })
+                .AddCookie((options) => 
+                {
+                    options.AccessDeniedPath = new PathString("/Error");
+                })
+                .AddCloudFoundryOAuth(Configuration);
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("fortunes.read", policy => policy.RequireClaim("scope", "fortunes.read"));
+            });
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddTransient<DiscoveryHttpMessageHandler>();
             services.AddDiscoveryClient(Configuration);
@@ -74,8 +93,13 @@ namespace FortuneTeller.UI
             app.UseStaticFiles();
             app.UseSession();
             app.UseCookiePolicy();
-
-            app.UseMvc();
+            app.UseAuthentication();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Fortunes}/{action=Index}/{id?}");
+            });
         }
     }
 }
