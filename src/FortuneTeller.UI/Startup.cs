@@ -16,6 +16,8 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Exporter.Tracing;
+using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
 using Steeltoe.Security.DataProtection;
 
@@ -78,6 +80,9 @@ namespace FortuneTeller.UI
             services.AddHealthActuator(Configuration);
             services.AddTraceActuator(Configuration);
 
+            services.AddDistributedTracing(Configuration);
+            services.AddZipkinExporter(Configuration);
+
             services.AddSession();
             services
                 .AddMvc()
@@ -104,6 +109,8 @@ namespace FortuneTeller.UI
             app.UseLoggersActuator();
             app.UseHealthActuator();
             app.UseTraceActuator();
+
+            app.UseTracingExporter();
 
             app.UseStaticFiles();
             app.UseSession();
